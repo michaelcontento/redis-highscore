@@ -237,7 +237,9 @@ class Highscore implements Countable
             $this->_namespace,
             $start,
             $start + $limit,
-            'WITHSCORES'
+            array(
+                'withscores' => true
+            )
         );
 
         $result = array();
@@ -263,24 +265,11 @@ class Highscore implements Countable
             $this->_namespace,
             (double) $start,
             '+inf',
-            'WITHSCORES',
-            'LIMIT',
-            0,
-            (double) $limit
+            array(
+                'withscores' => true,
+                'limit'      => array(0, (double) $limit)
+            )
         );
-
-        // Predis\Client < 0.7.0 does not recognize WITHSCORE in ZRANGEBYSCORE
-        // and return the raw response from Redis! 
-        if (!is_array($rows[0])) {
-            $result = array();
-            for ($i = 0; $i < count($rows); $i++) {
-                $result[] = array(
-                     $rows[$i], 
-                     $rows[++$i],
-                );
-            }
-            $rows = $result;
-        }
 
         $firstRank = $this->rank($rows[0][0]);
         $result = array();
