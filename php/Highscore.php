@@ -93,6 +93,22 @@ class Highscore implements Countable
     }
 
     /**
+     * @return Predis\Client
+     */
+    public function getRedis()
+    {
+        return $this->_redis;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return $this->_namespace;
+    }
+
+    /**
      * @param  string $userId
      * @return double
      */
