@@ -18,6 +18,7 @@
 
 /**
  * @author  Michael Contento <michaelcontento@gmail.com>
+ * @link    https://github.com/michaelcontento/redis-highscore
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache
  */
 class Highscore implements Countable
