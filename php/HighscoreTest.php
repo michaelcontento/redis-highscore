@@ -60,6 +60,30 @@ class HighscoreTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testUserIdIsTrimmed()
+    {
+        $this->_configureRedis('zrem', array('unittest', 'userId'));
+        $this->_highscore->remove(' userId ');
+    }
+
+    public function testUserIdCanBeNumericButAreConvertedToString()
+    {
+        $this->_configureRedis('zrem', array('unittest', '12'));
+        $this->_highscore->remove(12);
+    }
+
+    public function testUserIdCanBeNumericButAreConvertedToStringAsFloat()
+    {
+        $this->_configureRedis('zrem', array('unittest', '1.2'));
+        $this->_highscore->remove(1.2);
+    }
+
+    public function testUserIdMustBeNotEmpty()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        $this->_highscore->remove('');
+    }
+
     public function testNamespaceIsTrimmed()
     {
         $obj = new Highscore($this->_redis, ' trimmed ');
@@ -152,6 +176,173 @@ class HighscoreTest extends PHPUnit_Framework_TestCase
 
         $result = $this->_highscore->decrement('userId', 42);
         $this->assertEquals(42, $result);
+    }
+
+    public function testRank()
+    {
+        $this->_configureRedis(
+            'zrank', 
+            array('unittest', 'userId'),
+            0
+        );
+
+        $result = $this->_highscore->rank('userId');
+        $this->assertEquals(1, $result);
+    }
+
+    public function testListByRank()
+    {
+        $this->_configureRedis(
+            'zrange', 
+            array(
+                'unittest', 
+                0, 
+                9, 
+                array('withscores' => true)
+            ),
+            array(
+                array(
+                    'userA', 
+                    12
+                ), 
+                array(
+                    'userB', 
+                    34
+                )
+            )
+        );
+
+        $expected = array(
+            array(
+                'userId' => 'userA',
+                'score'  => 12,
+                'rank'   => 1
+            ),
+            array(
+                'userId' => 'userB',
+                'score'  => 34,
+                'rank'   => 2
+            )
+        );
+        $result = $this->_highscore->listByRank(10, 1);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testListByScore()
+    {
+        $this->_configureRedis(
+            'zrangebyscore', 
+            array(
+                'unittest', 
+                '-inf', 
+                '+inf',
+                array(
+                    'withscores' => true, 
+                    'limit' => array(0, 10)
+                )
+            ),
+            array(
+                array(
+                    'userA', 
+                    12
+                ), 
+                array(
+                    'userB', 
+                    34
+                )
+            )
+        );
+
+        $expected = array(
+            array(
+                'userId' => 'userA',
+                'score'  => 12,
+                'rank'   => 1
+            ),
+            array(
+                'userId' => 'userB',
+                'score'  => 34,
+                'rank'   => 2
+            )
+        );
+        $result = $this->_highscore->listByScore(10);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testListByScoreWithStart()
+    {
+        $this->_configureRedis(
+            'zrangebyscore', 
+            array(
+                'unittest', 
+                1, 
+                '+inf',
+                array(
+                    'withscores' => true, 
+                    'limit' => array(0, 10)
+                )
+            ),
+            array(
+                array(
+                    'userA', 
+                    12
+                ), 
+                array(
+                    'userB', 
+                    34
+                )
+            )
+        );
+
+        $expected = array(
+            array(
+                'userId' => 'userA',
+                'score'  => 12,
+                'rank'   => 1
+            ),
+            array(
+                'userId' => 'userB',
+                'score'  => 34,
+                'rank'   => 2
+            )
+        );
+        $result = $this->_highscore->listByScore(10, 1);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testCountByScore()
+    {
+        $this->_configureRedis(
+            'zcount', 
+            array('unittest', 12, 34),
+            42
+        );
+
+        $result = $this->_highscore->countByScore(12, 34);
+        $this->assertEquals(42, $result);
+    }
+
+    public function testCount()
+    {
+        $this->_configureRedis(
+            'zcount', 
+            array('unittest', '-inf', '+inf'),
+            42
+        );
+
+        $result = $this->_highscore->count();
+        $this->assertEquals(42, $result);
+    }
+
+    public function testCountViaCountableInterface()
+    {
+        $this->_configureRedis(
+            'zcount', 
+            array('unittest', '-inf', '+inf'),
+            42
+        );
+
+        $this->assertEquals(42, count($this->_highscore));
     }
 
     public function testGet()
