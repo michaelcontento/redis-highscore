@@ -7,7 +7,8 @@ Requirements
 Installation
 ------------
 
-    TODO
+    pear channel-discover pearhub.org
+    pear install pearhub/Highscore
 
 License
 -------
