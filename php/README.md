@@ -2,7 +2,7 @@ Requirements
 ------------
 
 * [PHP](http://www.php.net/) >= 5.2.0
-* [Predis](http://framework.zend.com/) >= 0.6.5
+* [Predis](https://github.com/nrk/predis/) >= 0.6.5
 
 Installation
 ------------
