@@ -7,8 +7,8 @@ Requirements
 Installation
 ------------
 
-    pear channel-discover pearhub.org
-    pear install pearhub/Highscore
+    sudo pear channel-discover pearhub.org
+    sudo pear install pearhub/Highscore
 
 License
 -------
