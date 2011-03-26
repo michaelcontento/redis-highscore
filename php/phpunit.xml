@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="phpunit.bootstrap.php">
+<phpunit bootstrap="phpunit.bootstrap.php" colors="true" verbose="true" syntaxCheck="true" strict="true">
     <testsuite name="Highscore">
         <directory>.</directory>
     </testsuite>
