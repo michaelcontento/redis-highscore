@@ -224,11 +224,11 @@ class Highscore implements Countable
     }
 
     /**
-     * @param  double $start
      * @param  double $limit
+     * @param  double $start
      * @return array
      */
-    public function listByRank($start, $limit)
+    public function listByRank($limit, $start=1)
     {
         $start = ((double) $start) - 1;
         $limit = ((double) $limit) - 1;
@@ -255,15 +255,21 @@ class Highscore implements Countable
     }
 
     /**
-     * @param  double $start
      * @param  double $limit
+     * @param  double $start
      * @return array
      */
-    public function listByScore($start, $limit)
+    public function listByScore($limit, $start=null)
     {
+        if ($start === null) {
+            $start = '-inf';
+        } else {
+            $start = (double) $start;
+        }
+
         $rows = $this->_redis->zrangebyscore(
             $this->_namespace,
-            (double) $start,
+            $start,
             '+inf',
             array(
                 'withscores' => true,
