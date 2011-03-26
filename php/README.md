@@ -1,7 +1,7 @@
 Requirements
 ------------
 
-* [PHP](http://www.php.net/) >= 5.2.0
+* [PHP](http://www.php.net/) >= 5.3.0
 * [Predis](https://github.com/nrk/predis/) >= 0.6.5
 
 Installation
